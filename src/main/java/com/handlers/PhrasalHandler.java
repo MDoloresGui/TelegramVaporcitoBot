@@ -1,41 +1,43 @@
 package com.handlers;
 
-import com.constants.Tokens;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import com.constants.FuzzyLogicWords;
+import com.utilities.VaporcitoUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
-
-public class PhrasalHandler extends TelegramLongPollingBot {
+public class PhrasalHandler extends BasicHandler {
     ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
     public void onUpdateReceived(Update update) {
-        String msg = update.getMessage().getText();
-        SendMessage sender = new SendMessage();
+
+        SendMessage sender = null;
         SendPhoto phSender = null;
         String response = "";
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            if (msg.toLowerCase().contains("cogedlo ahi") || msg.toLowerCase().contains("cogedlo ahí")
-                    || msg.toLowerCase().contains("cogerlo ahi") || msg.toLowerCase().contains("cogerlo ahí")) {
-                response = "¡AAAAAAY!";
+            String msg = update.getMessage().getText();
+            if (VaporcitoUtils.isMatchNoCaseSensitive(FuzzyLogicWords.CAI, msg, FuzzyLogicWords.CAI_TOLERANCE)
+                || VaporcitoUtils.isMatchNoCaseSensitive(FuzzyLogicWords.CADIZ, msg, FuzzyLogicWords.CADIZ_TOLERANCE)) {
+                sender = new SendMessage();
+                response = "OLE OLE OLE Y OLE MI CAI";
             }
 
-            if (msg.toLowerCase().contains("cai") || msg.toLowerCase().contains("cadiz") || msg.toLowerCase().contains("cádiz")) {
-                response = "OLE OLE Y OLE MI CAI";
+            if (VaporcitoUtils.isMatchNoCaseSensitive(FuzzyLogicWords.COGEDLO_AHI, msg, FuzzyLogicWords.COGEDLO_AHI_TOLERANCE)) {
+                sender = new SendMessage();
+                response = "¡AAAAAAAAAAAAAY!";
             }
 
-            if (msg.toLowerCase().contains("vaporcito") || msg.toLowerCase().contains("adriano")) {
+            if ( VaporcitoUtils.isMatchNoCaseSensitive(FuzzyLogicWords.VAPORCITO, msg, FuzzyLogicWords.VAPORCITO_TOLERANCE)
+                    || VaporcitoUtils.isMatchNoCaseSensitive(FuzzyLogicWords.ADRIANO, msg, FuzzyLogicWords.ADRIANO_TOLERANCE)) {
                 phSender = new SendPhoto();
                 phSender.setPhoto("VaporcitoDying.jpeg", classLoader.getResourceAsStream("VaporcitoDying.jpeg"));
                 phSender.setCaption("PRESS F TO PAY RESPECTS");
             }
         }
 
-        if (!response.isEmpty()) {
+        if (sender != null) {
             sender.setText(response);
             sender.setReplyToMessageId(update.getMessage().getMessageId());
             sender.setChatId(update.getMessage().getChatId());
@@ -55,14 +57,5 @@ public class PhrasalHandler extends TelegramLongPollingBot {
                 ex.printStackTrace();
             }
         }
-    }
-
-
-    public String getBotUsername() {
-        return Tokens.DES_BOT_NAME;
-    }
-
-    public String getBotToken() {
-        return Tokens.DES_TOKEN;
     }
 }

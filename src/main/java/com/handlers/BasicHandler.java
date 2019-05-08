@@ -9,10 +9,10 @@ public class BasicHandler extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {}
 
     public String getBotUsername() {
-        return Tokens.DES_BOT_NAME;
+        return Tokens.getBotName();
     }
 
     public String getBotToken() {
-        return Tokens.DES_TOKEN;
+        return Tokens.getToken();
     }
 }
